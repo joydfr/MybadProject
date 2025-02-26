@@ -4,8 +4,8 @@ namespace MvcMyBad.Interfaces
 {
     public interface IUserService
     {
-        Task<List<GetUserDto>> GetUsersAsync();
+        Task<IEnumerable<GetUserDto>> GetUsersAsync();
         Task<PostUserDto> CreateUserAsync(PostUserDto user);
-        Task<bool> EmailExistsAsync(string email);
+        Task<UserModel?> LoginUser(UserLoginDTO loginDto);
     }
 }

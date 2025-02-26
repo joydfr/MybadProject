@@ -1,0 +1,82 @@
+/* signup.css */
+
+
+.signin-container {
+    display: flex;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+
+}
+
+.form-group {
+    margin-top: 50px;
+}
+
+p {
+    margin-top: 40px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+a {
+    margin-left: 7px;
+}
+
+.form-section {
+    padding: 40px;
+    width: 50%;
+    margin-top: 250px;
+}
+
+.form-section h2 {
+
+    font-size: 38px;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.button input[type="submit"] {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 12px 30px;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-left: 180px;
+}
+
+.form-group input[type="submit"]:hover {
+    background-color: #333;
+}
+
+
+
+.image-section img {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}

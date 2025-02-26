@@ -15,6 +15,14 @@ namespace MvcMyBad.Data
 
             modelBuilder.Entity<UserModel>()
                 .HasKey(u => u.Id);
+
+            modelBuilder.Entity<UserModel>()
+                .HasIndex(u => u.Pseudo)
+                .IsUnique();
+
+            modelBuilder.Entity<UserModel>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }
