@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyBadProjet.Migrations
 {
     [DbContext(typeof(MybadDbContext))]
-    [Migration("20250214104011_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250219115415_ValidateModel")]
+    partial class ValidateModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,12 @@ namespace MyBadProjet.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Pseudo")
+                        .IsUnique();
 
                     b.ToTable("User");
                 });

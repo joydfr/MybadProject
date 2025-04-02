@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using MvcMyBad.Data;
-using MvcMyBad.Models;
 using MvcMyBad.Services;
 using MvcMyBad.Interfaces;
 using Microsoft.OpenApi.Models;
-using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,52 +24,65 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<MybadDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JWTConfig:Secret"]
+                ?? throw new InvalidOperationException("La clé JWT n'est pas configurée"))),
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWTConfig:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWTConfig:Audience"],
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc(
-        "v1",
-        new OpenApiInfo
-        {
-            Title = "MyBad API",
-            Version = "v1",
-            Description = "Une API pour gérer vos événements de badminton !",
-            Contact = new OpenApiContact
-            {
-                Name = "Mybad Support",
-                Email = "Mybad@example.com",
-                Url = new Uri("https://www.Mybad.com"),
-            },
-        }
-    );
-    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserValidationService, UserValidationService>();
+
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyBad API V1");
-    c.RoutePrefix = "swagger";
-});
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapControllerRoute(
+    name: "create",
+    pattern: "{controller=User}/{action=Create}");
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}").WithStaticAssets();
+});
+
 app.Run();
